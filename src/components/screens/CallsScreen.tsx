@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Search, Mic } from "lucide-react";
 import { CallCard, Call } from "../CallCard";
+import { ThemeToggle } from "../ThemeToggle";
 
 const mockCalls: Call[] = [
   {
@@ -91,9 +92,12 @@ export function CallsScreen() {
       <header className="px-5 pt-12 pb-4">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-foreground">المكالمات</h1>
-          <div className="flex items-center gap-2">
-            <div className="recording-indicator" />
-            <span className="text-sm font-medium text-muted-foreground">التسجيل نشط</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="recording-indicator" />
+              <span className="text-sm font-medium text-muted-foreground">التسجيل نشط</span>
+            </div>
+            <ThemeToggle />
           </div>
         </div>
 
