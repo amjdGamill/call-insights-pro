@@ -1,6 +1,6 @@
-import { Phone, BarChart3, Heart, Settings } from "lucide-react";
+import { Phone, BarChart3, Settings } from "lucide-react";
 
-type Tab = "calls" | "stats" | "favorites" | "settings";
+type Tab = "calls" | "stats" | "settings";
 
 interface BottomNavigationProps {
   activeTab: Tab;
@@ -10,7 +10,6 @@ interface BottomNavigationProps {
 const navItems = [
   { id: "calls" as Tab, label: "المكالمات", icon: Phone },
   { id: "stats" as Tab, label: "الإحصاءات", icon: BarChart3 },
-  { id: "favorites" as Tab, label: "المفضلة", icon: Heart },
   { id: "settings" as Tab, label: "الإعدادات", icon: Settings },
 ];
 

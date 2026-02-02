@@ -1,5 +1,4 @@
-import { Phone, PhoneIncoming, PhoneOutgoing, PhoneMissed, Play, Heart, MoreVertical } from "lucide-react";
-import { Waveform } from "./Waveform";
+import { PhoneIncoming, PhoneOutgoing, PhoneMissed, Play } from "lucide-react";
 
 export interface Call {
   id: string;
@@ -16,7 +15,6 @@ export interface Call {
 interface CallCardProps {
   call: Call;
   onPlay?: () => void;
-  onToggleFavorite?: () => void;
 }
 
 const typeIcons = {
@@ -31,13 +29,13 @@ const typeColors = {
   missed: "text-call-missed",
 };
 
-export function CallCard({ call, onPlay, onToggleFavorite }: CallCardProps) {
+export function CallCard({ call, onPlay }: CallCardProps) {
   const TypeIcon = typeIcons[call.type];
   const typeColor = typeColors[call.type];
 
   return (
     <div className="call-card animate-slide-up">
-      <div className="flex items-start gap-4">
+      <div className="flex items-center gap-4">
         {/* Avatar */}
         <div className="relative">
           <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
@@ -52,41 +50,27 @@ export function CallCard({ call, onPlay, onToggleFavorite }: CallCardProps) {
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="font-semibold text-foreground truncate">{call.name}</h3>
-            <span className="text-xs text-muted-foreground whitespace-nowrap">{call.time}</span>
+          <h3 className="font-semibold text-foreground truncate">{call.name}</h3>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs text-muted-foreground">{call.time}</span>
+            {call.isRecorded && (
+              <>
+                <span className="text-xs text-muted-foreground">•</span>
+                <span className="text-xs text-muted-foreground font-medium">{call.duration}</span>
+              </>
+            )}
           </div>
-          <p className="text-sm text-muted-foreground" dir="ltr">{call.number}</p>
-          
-          {call.isRecorded && (
-            <div className="mt-3 flex items-center gap-3">
-              <button
-                onClick={onPlay}
-                className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
-              >
-                <Play className="w-4 h-4 mr-[-2px]" />
-              </button>
-              <div className="flex-1">
-                <Waveform bars={25} />
-              </div>
-              <span className="text-xs text-muted-foreground font-medium">{call.duration}</span>
-            </div>
-          )}
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-col items-center gap-2">
+        {/* Play Button */}
+        {call.isRecorded && (
           <button
-            onClick={onToggleFavorite}
-            className={`p-2 rounded-full transition-colors ${
-              call.isFavorite 
-                ? "text-accent" 
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            onClick={onPlay}
+            className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
           >
-            <Heart className={`w-5 h-5 ${call.isFavorite ? "fill-current" : ""}`} />
+            <Play className="w-5 h-5 mr-[-2px]" />
           </button>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -2,15 +2,13 @@ import { useState } from "react";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { CallsScreen } from "@/components/screens/CallsScreen";
 import { StatsScreen } from "@/components/screens/StatsScreen";
-import { FavoritesScreen } from "@/components/screens/FavoritesScreen";
 import { SettingsScreen } from "@/components/screens/SettingsScreen";
 
-type Tab = "calls" | "stats" | "favorites" | "settings";
+type Tab = "calls" | "stats" | "settings";
 
 const screens = {
   calls: CallsScreen,
   stats: StatsScreen,
-  favorites: FavoritesScreen,
   settings: SettingsScreen,
 };
 

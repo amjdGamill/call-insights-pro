@@ -62,21 +62,13 @@ const mockCalls: Call[] = [
 ];
 
 export function CallsScreen() {
-  const [calls, setCalls] = useState(mockCalls);
+  const [calls] = useState(mockCalls);
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredCalls = calls.filter(
     (call) =>
       call.name.includes(searchQuery) || call.number.includes(searchQuery)
   );
-
-  const toggleFavorite = (id: string) => {
-    setCalls((prev) =>
-      prev.map((call) =>
-        call.id === id ? { ...call, isFavorite: !call.isFavorite } : call
-      )
-    );
-  };
 
   const groupedCalls = filteredCalls.reduce((acc, call) => {
     if (!acc[call.date]) {
@@ -124,7 +116,6 @@ export function CallsScreen() {
                 <CallCard
                   key={call.id}
                   call={call}
-                  onToggleFavorite={() => toggleFavorite(call.id)}
                 />
               ))}
             </div>
