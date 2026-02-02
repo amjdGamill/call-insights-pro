@@ -5,7 +5,7 @@ import {
   Shield, 
   Cloud, 
   Palette, 
-  HelpCircle, 
+   
   Info,
   ChevronLeft,
   Phone,
@@ -18,7 +18,7 @@ import { AudioQualityDialog } from "@/components/settings/AudioQualityDialog";
 import { ThemeDialog } from "@/components/settings/ThemeDialog";
 import { DeleteConfirmDialog } from "@/components/settings/DeleteConfirmDialog";
 import { ExportDialog } from "@/components/settings/ExportDialog";
-import { HelpDialog } from "@/components/settings/HelpDialog";
+
 import { AboutDialog } from "@/components/settings/AboutDialog";
 import { PasswordDialog } from "@/components/settings/PasswordDialog";
 import { useTheme } from "@/components/ThemeProvider";
@@ -55,7 +55,7 @@ export function SettingsScreen() {
   const [themeOpen, setThemeOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
+  
   const [aboutOpen, setAboutOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
 
@@ -96,9 +96,6 @@ export function SettingsScreen() {
           break;
         case "export":
           setExportOpen(true);
-          break;
-        case "help":
-          setHelpOpen(true);
           break;
         case "about":
           setAboutOpen(true);
@@ -228,13 +225,6 @@ export function SettingsScreen() {
           color: "bg-accent/10 text-accent",
         },
         {
-          id: "help",
-          icon: HelpCircle,
-          label: "المساعدة والدعم",
-          type: "link" as const,
-          color: "bg-muted text-muted-foreground",
-        },
-        {
           id: "about",
           icon: Info,
           label: "حول التطبيق",
@@ -325,7 +315,7 @@ export function SettingsScreen() {
         onConfirm={handleDeleteAll}
       />
       <ExportDialog open={exportOpen} onOpenChange={setExportOpen} />
-      <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
+      
       <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
       <PasswordDialog
         open={passwordOpen}
