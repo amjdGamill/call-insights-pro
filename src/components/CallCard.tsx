@@ -1,20 +1,22 @@
 import { PhoneIncoming, PhoneOutgoing, PhoneMissed, Play, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { DeleteRecordingDialog } from "@/components/dialogs/DeleteRecordingDialog";
+import { AudioPlayerDialog } from "@/components/dialogs/AudioPlayerDialog";
 
 export interface Call {
   id: string;
   name: string;
   number: string;
   type: "incoming" | "outgoing" | "missed";
-  duration: string;
-  date: string;
-  time: string;
-  isFavorite: boolean;
+  formattedDuration: string;
+  formattedDate: string;
+  formattedTime: string;
   isRecorded: boolean;
 }
 
 interface CallCardProps {
   call: Call;
-  onPlay?: () => void;
+  onDelete?: (id: string) => void;
 }
 
 const typeIcons = {
@@ -29,60 +31,88 @@ const typeColors = {
   missed: "text-call-missed",
 };
 
-export function CallCard({ call, onPlay }: CallCardProps) {
+export function CallCard({ call, onDelete }: CallCardProps) {
   const TypeIcon = typeIcons[call.type];
   const typeColor = typeColors[call.type];
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [playerDialogOpen, setPlayerDialogOpen] = useState(false);
+
+  const handleDelete = () => {
+    onDelete?.(call.id);
+    setDeleteDialogOpen(false);
+  };
 
   return (
-    <div className="call-card animate-slide-up">
-      <div className="flex items-center gap-4">
-        {/* Avatar */}
-        <div className="relative">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-            <span className="text-xl font-bold text-primary">
-              {call.name.charAt(0)}
-            </span>
+    <>
+      <div className="call-card animate-slide-up">
+        <div className="flex items-center gap-4">
+          {/* Avatar */}
+          <div className="relative">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+              <span className="text-xl font-bold text-primary">
+                {call.name.charAt(0)}
+              </span>
+            </div>
+            <div className={`absolute -bottom-1 -left-1 w-6 h-6 rounded-full bg-card flex items-center justify-center border-2 border-background ${typeColor}`}>
+              <TypeIcon className="w-3 h-3" />
+            </div>
           </div>
-          <div className={`absolute -bottom-1 -left-1 w-6 h-6 rounded-full bg-card flex items-center justify-center border-2 border-background ${typeColor}`}>
-            <TypeIcon className="w-3 h-3" />
-          </div>
-        </div>
 
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-foreground truncate">{call.name}</h3>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-muted-foreground">{call.time}</span>
-            {call.isRecorded && (
-              <>
-                <span className="text-xs text-muted-foreground">•</span>
-                <span className="text-xs text-muted-foreground font-medium">{call.duration}</span>
-              </>
-            )}
+          {/* Info */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-foreground truncate">{call.name}</h3>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-muted-foreground">{call.formattedTime}</span>
+              {call.isRecorded && (
+                <>
+                  <span className="text-xs text-muted-foreground">•</span>
+                  <span className="text-xs text-muted-foreground font-medium">{call.formattedDuration}</span>
+                </>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Action Buttons */}
-        {call.isRecorded && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                console.log("Delete recording:", call.id);
-              }}
-              className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={onPlay}
-              className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
-            >
-              <Play className="w-3.5 h-3.5 rotate-180" />
-            </button>
-          </div>
-        )}
+          {/* Action Buttons */}
+          {call.isRecorded && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteDialogOpen(true);
+                }}
+                className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPlayerDialogOpen(true);
+                }}
+                className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
+              >
+                <Play className="w-3.5 h-3.5 rotate-180" />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Delete Dialog */}
+      <DeleteRecordingDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+        callerName={call.name}
+      />
+
+      {/* Audio Player Dialog */}
+      <AudioPlayerDialog
+        open={playerDialogOpen}
+        onOpenChange={setPlayerDialogOpen}
+        callerName={call.name}
+        duration={call.formattedDuration}
+      />
+    </>
   );
 }

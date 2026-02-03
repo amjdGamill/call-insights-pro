@@ -13,6 +13,8 @@ import { ThemeDialog } from "@/components/settings/ThemeDialog";
 import { DeleteConfirmDialog } from "@/components/settings/DeleteConfirmDialog";
 import { AboutDialog } from "@/components/settings/AboutDialog";
 import { useTheme } from "@/components/ThemeProvider";
+import { useSettings } from "@/hooks/useSettings";
+import { useRecordings } from "@/hooks/useRecordings";
 import { toast } from "sonner";
 
 const audioQualityLabels: Record<string, string> = {
@@ -30,11 +32,8 @@ const themeLabels: Record<string, string> = {
 
 export function SettingsScreen() {
   const { theme } = useTheme();
-  const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({
-    "auto-record": true,
-  });
-  
-  const [audioQuality, setAudioQuality] = useState("high");
+  const { settings, updateSettings } = useSettings();
+  const { deleteAllRecordings } = useRecordings();
   
   // Dialog states
   const [audioQualityOpen, setAudioQualityOpen] = useState(false);
@@ -43,14 +42,17 @@ export function SettingsScreen() {
   const [aboutOpen, setAboutOpen] = useState(false);
 
   const handleToggle = (id: string) => {
-    setToggleStates((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    if (id === "auto-record") {
+      updateSettings({ autoRecord: !settings.autoRecord });
+    }
+  };
+
+  const handleAudioQualityChange = (quality: string) => {
+    updateSettings({ audioQuality: quality as "low" | "medium" | "high" | "ultra" });
   };
 
   const handleDeleteAll = () => {
-    console.log("All recordings deleted");
+    deleteAllRecordings();
     toast.success("تم حذف جميع التسجيلات");
     setDeleteOpen(false);
   };
@@ -75,17 +77,6 @@ export function SettingsScreen() {
     }
   };
 
-  const getDescription = (id: string, originalDescription?: string) => {
-    switch (id) {
-      case "audio-quality":
-        return audioQualityLabels[audioQuality];
-      case "theme":
-        return themeLabels[theme];
-      default:
-        return originalDescription;
-    }
-  };
-
   const settingSections = [
     {
       title: "التسجيل",
@@ -97,6 +88,7 @@ export function SettingsScreen() {
           description: "تسجيل جميع المكالمات تلقائياً",
           type: "toggle" as const,
           color: "bg-primary/10 text-primary",
+          checked: settings.autoRecord,
         },
       ],
     },
@@ -107,7 +99,7 @@ export function SettingsScreen() {
           id: "audio-quality",
           icon: Volume2,
           label: "جودة الصوت",
-          description: audioQualityLabels[audioQuality],
+          description: audioQualityLabels[settings.audioQuality],
           type: "link" as const,
           color: "bg-accent/10 text-accent",
         },
@@ -191,7 +183,7 @@ export function SettingsScreen() {
                     </div>
                     {item.type === "toggle" && (
                       <Switch
-                        checked={toggleStates[item.id] ?? false}
+                        checked={item.checked ?? false}
                         onCheckedChange={() => handleToggle(item.id)}
                       />
                     )}
@@ -217,8 +209,8 @@ export function SettingsScreen() {
       <AudioQualityDialog
         open={audioQualityOpen}
         onOpenChange={setAudioQualityOpen}
-        value={audioQuality}
-        onValueChange={setAudioQuality}
+        value={settings.audioQuality}
+        onValueChange={handleAudioQualityChange}
       />
       <ThemeDialog open={themeOpen} onOpenChange={setThemeOpen} />
       <DeleteConfirmDialog
