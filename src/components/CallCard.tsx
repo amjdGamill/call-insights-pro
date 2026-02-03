@@ -1,4 +1,4 @@
-import { PhoneIncoming, PhoneOutgoing, PhoneMissed, Play } from "lucide-react";
+import { PhoneIncoming, PhoneOutgoing, PhoneMissed, Play, Trash2 } from "lucide-react";
 
 export interface Call {
   id: string;
@@ -62,14 +62,25 @@ export function CallCard({ call, onPlay }: CallCardProps) {
           </div>
         </div>
 
-        {/* Play Button */}
+        {/* Action Buttons */}
         {call.isRecorded && (
-          <button
-            onClick={onPlay}
-            className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
-          >
-            <Play className="w-5 h-5 rotate-180" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log("Delete recording:", call.id);
+              }}
+              className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onPlay}
+              className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
+            >
+              <Play className="w-3.5 h-3.5 rotate-180" />
+            </button>
+          </div>
         )}
       </div>
     </div>
