@@ -1,82 +1,32 @@
 import { useState } from "react";
 import { Search, Mic } from "lucide-react";
-import { CallCard, Call } from "../CallCard";
+import { CallCard } from "../CallCard";
 import { ThemeToggle } from "../ThemeToggle";
-
-const mockCalls: Call[] = [
-  {
-    id: "1",
-    name: "أحمد محمد",
-    number: "+966 50 123 4567",
-    type: "incoming",
-    duration: "5:23",
-    date: "اليوم",
-    time: "10:30 ص",
-    isFavorite: true,
-    isRecorded: true,
-  },
-  {
-    id: "2",
-    name: "سارة علي",
-    number: "+966 55 987 6543",
-    type: "outgoing",
-    duration: "12:45",
-    date: "اليوم",
-    time: "09:15 ص",
-    isFavorite: false,
-    isRecorded: true,
-  },
-  {
-    id: "3",
-    name: "محمد خالد",
-    number: "+966 54 456 7890",
-    type: "missed",
-    duration: "0:00",
-    date: "أمس",
-    time: "11:45 م",
-    isFavorite: false,
-    isRecorded: false,
-  },
-  {
-    id: "4",
-    name: "فاطمة أحمد",
-    number: "+966 56 321 0987",
-    type: "incoming",
-    duration: "8:12",
-    date: "أمس",
-    time: "3:20 م",
-    isFavorite: true,
-    isRecorded: true,
-  },
-  {
-    id: "5",
-    name: "عبدالله سعيد",
-    number: "+966 50 555 1234",
-    type: "outgoing",
-    duration: "2:34",
-    date: "أمس",
-    time: "1:00 م",
-    isFavorite: false,
-    isRecorded: true,
-  },
-];
+import { useRecordings } from "@/hooks/useRecordings";
 
 export function CallsScreen() {
-  const [calls] = useState(mockCalls);
+  const { groupedRecordings, deleteRecording, loading } = useRecordings();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredCalls = calls.filter(
-    (call) =>
-      call.name.includes(searchQuery) || call.number.includes(searchQuery)
-  );
-
-  const groupedCalls = filteredCalls.reduce((acc, call) => {
-    if (!acc[call.date]) {
-      acc[call.date] = [];
+  // تصفية التسجيلات حسب البحث
+  const filteredGroups = Object.entries(groupedRecordings).reduce((acc, [date, calls]) => {
+    const filtered = calls.filter(
+      (call) =>
+        call.name.includes(searchQuery) || call.number.includes(searchQuery)
+    );
+    if (filtered.length > 0) {
+      acc[date] = filtered;
     }
-    acc[call.date].push(call);
     return acc;
-  }, {} as Record<string, Call[]>);
+  }, {} as typeof groupedRecordings);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -108,19 +58,29 @@ export function CallsScreen() {
 
       {/* Calls List */}
       <div className="flex-1 overflow-y-auto px-5 pb-32">
-        {Object.entries(groupedCalls).map(([date, calls]) => (
-          <div key={date} className="mb-6">
-            <h2 className="text-sm font-semibold text-muted-foreground mb-3">{date}</h2>
-            <div className="space-y-3">
-              {calls.map((call) => (
-                <CallCard
-                  key={call.id}
-                  call={call}
-                />
-              ))}
+        {Object.keys(filteredGroups).length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 text-center">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+              <Search className="w-8 h-8 text-muted-foreground" />
             </div>
+            <p className="text-muted-foreground">لا توجد تسجيلات</p>
           </div>
-        ))}
+        ) : (
+          Object.entries(filteredGroups).map(([date, calls]) => (
+            <div key={date} className="mb-6">
+              <h2 className="text-sm font-semibold text-muted-foreground mb-3">{date}</h2>
+              <div className="space-y-3">
+                {calls.map((call) => (
+                  <CallCard
+                    key={call.id}
+                    call={call}
+                    onDelete={deleteRecording}
+                  />
+                ))}
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* FAB */}
