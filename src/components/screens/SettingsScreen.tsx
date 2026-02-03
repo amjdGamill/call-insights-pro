@@ -1,26 +1,17 @@
 import { 
   Mic, 
   Volume2, 
-  Bell, 
-  Shield, 
-  Cloud, 
   Palette, 
-   
   Info,
   ChevronLeft,
-  Phone,
-  Trash2,
-  Download
+  Trash2
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { AudioQualityDialog } from "@/components/settings/AudioQualityDialog";
 import { ThemeDialog } from "@/components/settings/ThemeDialog";
 import { DeleteConfirmDialog } from "@/components/settings/DeleteConfirmDialog";
-import { ExportDialog } from "@/components/settings/ExportDialog";
-
 import { AboutDialog } from "@/components/settings/AboutDialog";
-import { PasswordDialog } from "@/components/settings/PasswordDialog";
 import { useTheme } from "@/components/ThemeProvider";
 import { toast } from "sonner";
 
@@ -41,11 +32,6 @@ export function SettingsScreen() {
   const { theme } = useTheme();
   const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({
     "auto-record": true,
-    "record-incoming": true,
-    "record-outgoing": true,
-    "notifications": true,
-    "cloud-backup": false,
-    "password": false,
   });
   
   const [audioQuality, setAudioQuality] = useState("high");
@@ -54,29 +40,13 @@ export function SettingsScreen() {
   const [audioQualityOpen, setAudioQualityOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [exportOpen, setExportOpen] = useState(false);
-  
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [passwordOpen, setPasswordOpen] = useState(false);
 
   const handleToggle = (id: string) => {
-    if (id === "password" && !toggleStates[id]) {
-      setPasswordOpen(true);
-      return;
-    }
     setToggleStates((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
-  };
-
-  const handlePasswordSave = (password: string) => {
-    console.log("Password saved:", password);
-    setToggleStates((prev) => ({
-      ...prev,
-      password: true,
-    }));
-    toast.success("تم تفعيل قفل التطبيق");
   };
 
   const handleDeleteAll = () => {
@@ -93,9 +63,6 @@ export function SettingsScreen() {
           break;
         case "theme":
           setThemeOpen(true);
-          break;
-        case "export":
-          setExportOpen(true);
           break;
         case "about":
           setAboutOpen(true);
@@ -131,20 +98,6 @@ export function SettingsScreen() {
           type: "toggle" as const,
           color: "bg-primary/10 text-primary",
         },
-        {
-          id: "record-incoming",
-          icon: Phone,
-          label: "تسجيل المكالمات الواردة",
-          type: "toggle" as const,
-          color: "bg-call-incoming/10 text-call-incoming",
-        },
-        {
-          id: "record-outgoing",
-          icon: Phone,
-          label: "تسجيل المكالمات الصادرة",
-          type: "toggle" as const,
-          color: "bg-call-outgoing/10 text-call-outgoing",
-        },
       ],
     },
     {
@@ -161,55 +114,14 @@ export function SettingsScreen() {
       ],
     },
     {
-      title: "الإشعارات",
-      items: [
-        {
-          id: "notifications",
-          icon: Bell,
-          label: "الإشعارات",
-          description: "تنبيهات عند بدء التسجيل",
-          type: "toggle" as const,
-          color: "bg-warning/10 text-warning",
-        },
-      ],
-    },
-    {
       title: "التخزين",
       items: [
-        {
-          id: "cloud-backup",
-          icon: Cloud,
-          label: "النسخ الاحتياطي السحابي",
-          description: "مزامنة التسجيلات مع السحابة",
-          type: "toggle" as const,
-          color: "bg-primary/10 text-primary",
-        },
-        {
-          id: "export",
-          icon: Download,
-          label: "تصدير التسجيلات",
-          type: "link" as const,
-          color: "bg-success/10 text-success",
-        },
         {
           id: "delete-all",
           icon: Trash2,
           label: "حذف جميع التسجيلات",
           type: "action" as const,
           color: "bg-destructive/10 text-destructive",
-        },
-      ],
-    },
-    {
-      title: "الخصوصية والأمان",
-      items: [
-        {
-          id: "password",
-          icon: Shield,
-          label: "قفل التطبيق",
-          description: toggleStates.password ? "مفعّل" : "حماية التسجيلات بكلمة مرور",
-          type: "toggle" as const,
-          color: "bg-primary/10 text-primary",
         },
       ],
     },
@@ -314,14 +226,7 @@ export function SettingsScreen() {
         onOpenChange={setDeleteOpen}
         onConfirm={handleDeleteAll}
       />
-      <ExportDialog open={exportOpen} onOpenChange={setExportOpen} />
-      
       <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
-      <PasswordDialog
-        open={passwordOpen}
-        onOpenChange={setPasswordOpen}
-        onSave={handlePasswordSave}
-      />
     </div>
   );
 }
