@@ -1,6 +1,5 @@
-import { PhoneIncoming, PhoneOutgoing, PhoneMissed, Play, Trash2 } from "lucide-react";
+import { PhoneIncoming, PhoneOutgoing, PhoneMissed, Play, Check } from "lucide-react";
 import { useState } from "react";
-import { DeleteRecordingDialog } from "@/components/dialogs/DeleteRecordingDialog";
 import { AudioPlayerDialog } from "@/components/dialogs/AudioPlayerDialog";
 
 export interface Call {
@@ -16,7 +15,9 @@ export interface Call {
 
 interface CallCardProps {
   call: Call;
-  onDelete?: (id: string) => void;
+  isSelectionMode: boolean;
+  isSelected: boolean;
+  onToggleSelect: (id: string) => void;
 }
 
 const typeIcons = {
@@ -31,32 +32,57 @@ const typeColors = {
   missed: "text-call-missed",
 };
 
-export function CallCard({ call, onDelete }: CallCardProps) {
+export function CallCard({ call, isSelectionMode, isSelected, onToggleSelect }: CallCardProps) {
   const TypeIcon = typeIcons[call.type];
   const typeColor = typeColors[call.type];
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [playerDialogOpen, setPlayerDialogOpen] = useState(false);
 
-  const handleDelete = () => {
-    onDelete?.(call.id);
-    setDeleteDialogOpen(false);
+  const handleCardClick = () => {
+    if (isSelectionMode) {
+      onToggleSelect(call.id);
+    }
+  };
+
+  const handleLongPress = () => {
+    if (!isSelectionMode) {
+      onToggleSelect(call.id);
+    }
   };
 
   return (
     <>
-      <div className="call-card animate-slide-up">
+      <div 
+        className={`call-card animate-slide-up cursor-pointer ${isSelected ? 'ring-2 ring-primary bg-primary/5' : ''}`}
+        onClick={handleCardClick}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          handleLongPress();
+        }}
+      >
         <div className="flex items-center gap-4">
-          {/* Avatar */}
-          <div className="relative">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-              <span className="text-xl font-bold text-primary">
-                {call.name.charAt(0)}
-              </span>
+          {/* Selection Checkbox or Avatar */}
+          {isSelectionMode ? (
+            <div 
+              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${
+                isSelected 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-secondary border-2 border-border'
+              }`}
+            >
+              {isSelected && <Check className="w-6 h-6" />}
             </div>
-            <div className={`absolute -bottom-1 -left-1 w-6 h-6 rounded-full bg-card flex items-center justify-center border-2 border-background ${typeColor}`}>
-              <TypeIcon className="w-3 h-3" />
+          ) : (
+            <div className="relative">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                <span className="text-xl font-bold text-primary">
+                  {call.name.charAt(0)}
+                </span>
+              </div>
+              <div className={`absolute -bottom-1 -left-1 w-6 h-6 rounded-full bg-card flex items-center justify-center border-2 border-background ${typeColor}`}>
+                <TypeIcon className="w-3 h-3" />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Info */}
           <div className="flex-1 min-w-0">
@@ -72,39 +98,20 @@ export function CallCard({ call, onDelete }: CallCardProps) {
             </div>
           </div>
 
-          {/* Action Buttons */}
-          {call.isRecorded && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setDeleteDialogOpen(true);
-                }}
-                className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setPlayerDialogOpen(true);
-                }}
-                className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
-              >
-                <Play className="w-3.5 h-3.5 rotate-180" />
-              </button>
-            </div>
+          {/* Play Button - Only show when not in selection mode */}
+          {call.isRecorded && !isSelectionMode && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setPlayerDialogOpen(true);
+              }}
+              className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
+            >
+              <Play className="w-4 h-4 rotate-180" />
+            </button>
           )}
         </div>
       </div>
-
-      {/* Delete Dialog */}
-      <DeleteRecordingDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        onConfirm={handleDelete}
-        callerName={call.name}
-      />
 
       {/* Audio Player Dialog */}
       <AudioPlayerDialog
