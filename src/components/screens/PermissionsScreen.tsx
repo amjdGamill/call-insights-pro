@@ -7,9 +7,11 @@ import {
   Accessibility, 
   CheckCircle2,
   ChevronLeft,
-  Smartphone
+  Smartphone,
+  Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AccessibilityGuideDialog } from "@/components/dialogs/AccessibilityGuideDialog";
 
 interface Permission {
   id: string;
@@ -17,6 +19,7 @@ interface Permission {
   title: string;
   description: string;
   required: boolean;
+  hasGuide?: boolean;
 }
 
 const permissions: Permission[] = [
@@ -54,6 +57,7 @@ const permissions: Permission[] = [
     title: "خدمات إمكانية الوصول",
     description: "مطلوب في أندرويد 10+ لتسجيل المكالمات بشكل صحيح",
     required: true,
+    hasGuide: true,
   },
   {
     id: "overlay",
@@ -71,11 +75,24 @@ interface PermissionsScreenProps {
 export function PermissionsScreen({ onComplete }: PermissionsScreenProps) {
   const [grantedPermissions, setGrantedPermissions] = useState<Set<string>>(new Set());
   const [currentStep, setCurrentStep] = useState(0);
+  const [showAccessibilityGuide, setShowAccessibilityGuide] = useState(false);
 
-  const handleGrantPermission = (permissionId: string) => {
-    // In real app, this would request actual permissions via Capacitor
-    setGrantedPermissions((prev) => new Set([...prev, permissionId]));
+  const handleGrantPermission = (permission: Permission) => {
+    if (permission.id === "accessibility" && permission.hasGuide) {
+      setShowAccessibilityGuide(true);
+      return;
+    }
     
+    // In real app, this would request actual permissions via Capacitor
+    setGrantedPermissions((prev) => new Set([...prev, permission.id]));
+    
+    if (currentStep < permissions.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleAccessibilityComplete = () => {
+    setGrantedPermissions((prev) => new Set([...prev, "accessibility"]));
     if (currentStep < permissions.length - 1) {
       setCurrentStep(currentStep + 1);
     }
@@ -146,6 +163,9 @@ export function PermissionsScreen({ onComplete }: PermissionsScreenProps) {
                           مطلوب
                         </span>
                       )}
+                      {permission.hasGuide && !isGranted && (
+                        <Info className="w-4 h-4 text-amber-500" />
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       {permission.description}
@@ -153,12 +173,12 @@ export function PermissionsScreen({ onComplete }: PermissionsScreenProps) {
 
                     {!isGranted && isCurrent && (
                       <Button
-                        onClick={() => handleGrantPermission(permission.id)}
+                        onClick={() => handleGrantPermission(permission)}
                         className="mt-3 w-full"
                         size="sm"
                       >
                         <ChevronLeft className="w-4 h-4 ml-2" />
-                        منح الصلاحية
+                        {permission.hasGuide ? "عرض التعليمات" : "منح الصلاحية"}
                       </Button>
                     )}
                   </div>
@@ -196,6 +216,13 @@ export function PermissionsScreen({ onComplete }: PermissionsScreenProps) {
           </p>
         )}
       </div>
+
+      {/* Accessibility Guide Dialog */}
+      <AccessibilityGuideDialog
+        open={showAccessibilityGuide}
+        onOpenChange={setShowAccessibilityGuide}
+        onComplete={handleAccessibilityComplete}
+      />
     </div>
   );
 }
