@@ -1,4 +1,5 @@
-import { Phone, Clock, TrendingUp, Users, PhoneIncoming, PhoneOutgoing, PhoneMissed } from "lucide-react";
+ import { Phone, Clock, TrendingUp, Users, PhoneIncoming, PhoneOutgoing, PhoneMissed } from "lucide-react";
+ import { ProUpgradeButton } from "@/components/ProUpgradeButton";
 import { useRecordingStats } from "@/hooks/useRecordings";
 import { formatTotalDuration } from "@/lib/recordings";
 
@@ -51,7 +52,10 @@ export function StatsScreen() {
     <div className="flex flex-col h-full overflow-y-auto pb-32">
       {/* Header */}
       <header className="px-5 pt-12 pb-6">
-        <h1 className="text-2xl font-bold text-foreground">الإحصاءات</h1>
+         <div className="flex items-center justify-between">
+           <h1 className="text-2xl font-bold text-foreground">الإحصاءات</h1>
+           <ProUpgradeButton />
+         </div>
         <p className="text-muted-foreground mt-1">نظرة عامة على مكالماتك</p>
       </header>
 
