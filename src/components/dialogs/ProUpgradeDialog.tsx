@@ -4,7 +4,7 @@
    DialogHeader,
    DialogTitle,
  } from "@/components/ui/dialog";
- import { Crown, Check, Zap, Shield, Download, Headphones } from "lucide-react";
+ import { Crown, Check, Zap, BarChart3, Headphones } from "lucide-react";
  import { Button } from "@/components/ui/button";
  import { toast } from "sonner";
  
@@ -15,8 +15,7 @@
  
  const proFeatures = [
    { icon: Zap, label: "تسجيل بجودة فائقة", description: "جودة 320 kbps بدون فقدان" },
-   { icon: Shield, label: "حماية متقدمة", description: "قفل بالبصمة وكلمة المرور" },
-   { icon: Download, label: "نسخ احتياطي تلقائي", description: "حفظ في السحابة تلقائياً" },
+   { icon: BarChart3, label: "الإحصاءات المتقدمة", description: "تحليلات تفصيلية لمكالماتك" },
    { icon: Headphones, label: "بدون إعلانات", description: "تجربة خالية من الإعلانات" },
  ];
  
