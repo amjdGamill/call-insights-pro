@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Search, Mic, X, Trash2, Share2, CheckSquare, Square } from "lucide-react";
+ import { Search, Mic, X, Trash2, Share2, CheckSquare, Square } from "lucide-react";
+ import { ProUpgradeButton } from "@/components/ProUpgradeButton";
 import { CallCard } from "../CallCard";
 import { ThemeToggle } from "../ThemeToggle";
 import { useRecordings } from "@/hooks/useRecordings";
@@ -92,6 +93,7 @@ export function CallsScreen() {
             <>
               <h1 className="text-2xl font-bold text-foreground">المكالمات</h1>
               <div className="flex items-center gap-3">
+                 <ProUpgradeButton />
                 <div className="flex items-center gap-2">
                   <div className="recording-indicator" />
                   <span className="text-sm font-medium text-muted-foreground">التسجيل نشط</span>

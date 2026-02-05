@@ -14,7 +14,8 @@ import { DeleteConfirmDialog } from "@/components/settings/DeleteConfirmDialog";
 import { AboutDialog } from "@/components/settings/AboutDialog";
 import { useTheme } from "@/components/ThemeProvider";
 import { useSettings } from "@/hooks/useSettings";
-import { useRecordings } from "@/hooks/useRecordings";
+ import { useRecordings } from "@/hooks/useRecordings";
+ import { ProUpgradeButton } from "@/components/ProUpgradeButton";
 import { toast } from "sonner";
 
 const audioQualityLabels: Record<string, string> = {
@@ -144,7 +145,10 @@ export function SettingsScreen() {
     <div className="flex flex-col h-full overflow-y-auto pb-32">
       {/* Header */}
       <header className="px-5 pt-12 pb-6">
-        <h1 className="text-2xl font-bold text-foreground">الإعدادات</h1>
+         <div className="flex items-center justify-between">
+           <h1 className="text-2xl font-bold text-foreground">الإعدادات</h1>
+           <ProUpgradeButton />
+         </div>
         <p className="text-muted-foreground mt-1">تخصيص تجربة التطبيق</p>
       </header>
 
