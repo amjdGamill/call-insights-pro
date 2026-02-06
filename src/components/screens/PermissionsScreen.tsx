@@ -8,10 +8,11 @@ import {
   CheckCircle2,
   ChevronLeft,
   Smartphone,
-  Info
+  Settings,
+  Search,
+  ToggleRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AccessibilityGuideDialog } from "@/components/dialogs/AccessibilityGuideDialog";
 
 interface Permission {
   id: string;
@@ -19,7 +20,6 @@ interface Permission {
   title: string;
   description: string;
   required: boolean;
-  hasGuide?: boolean;
 }
 
 const permissions: Permission[] = [
@@ -57,7 +57,6 @@ const permissions: Permission[] = [
     title: "خدمات إمكانية الوصول",
     description: "مطلوب في أندرويد 10+ لتسجيل المكالمات بشكل صحيح",
     required: true,
-    hasGuide: true,
   },
   {
     id: "overlay",
@@ -68,6 +67,34 @@ const permissions: Permission[] = [
   },
 ];
 
+const accessibilitySteps = [
+  {
+    icon: Settings,
+    title: "افتح الإعدادات",
+    description: "اذهب إلى إعدادات الهاتف الرئيسية",
+  },
+  {
+    icon: Search,
+    title: "ابحث عن إمكانية الوصول",
+    description: "ابحث عن 'إمكانية الوصول' أو 'Accessibility'",
+  },
+  {
+    icon: ChevronLeft,
+    title: "اختر التطبيقات المثبتة",
+    description: "'التطبيقات المثبتة' أو 'Installed apps'",
+  },
+  {
+    icon: ToggleRight,
+    title: "فعّل مسجل المكالمات",
+    description: "ابحث عن 'مسجل المكالمات' وقم بتفعيله",
+  },
+  {
+    icon: CheckCircle2,
+    title: "اضغط موافق",
+    description: "وافق على رسالة التأكيد",
+  },
+];
+
 interface PermissionsScreenProps {
   onComplete: () => void;
 }
@@ -75,24 +102,11 @@ interface PermissionsScreenProps {
 export function PermissionsScreen({ onComplete }: PermissionsScreenProps) {
   const [grantedPermissions, setGrantedPermissions] = useState<Set<string>>(new Set());
   const [currentStep, setCurrentStep] = useState(0);
-  const [showAccessibilityGuide, setShowAccessibilityGuide] = useState(false);
 
-  const handleGrantPermission = (permission: Permission) => {
-    if (permission.id === "accessibility" && permission.hasGuide) {
-      setShowAccessibilityGuide(true);
-      return;
-    }
-    
+  const handleGrantPermission = (permissionId: string) => {
     // In real app, this would request actual permissions via Capacitor
-    setGrantedPermissions((prev) => new Set([...prev, permission.id]));
+    setGrantedPermissions((prev) => new Set([...prev, permissionId]));
     
-    if (currentStep < permissions.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handleAccessibilityComplete = () => {
-    setGrantedPermissions((prev) => new Set([...prev, "accessibility"]));
     if (currentStep < permissions.length - 1) {
       setCurrentStep(currentStep + 1);
     }
@@ -120,12 +134,13 @@ export function PermissionsScreen({ onComplete }: PermissionsScreenProps) {
       </header>
 
       {/* Permissions List */}
-      <div className="flex-1 px-5 overflow-y-auto">
+      <div className="flex-1 px-5 overflow-y-auto pb-4">
         <div className="space-y-3">
           {permissions.map((permission, index) => {
             const Icon = permission.icon;
             const isGranted = grantedPermissions.has(permission.id);
             const isCurrent = index === currentStep && !isGranted;
+            const isAccessibility = permission.id === "accessibility";
 
             return (
               <div
@@ -163,22 +178,55 @@ export function PermissionsScreen({ onComplete }: PermissionsScreenProps) {
                           مطلوب
                         </span>
                       )}
-                      {permission.hasGuide && !isGranted && (
-                        <Info className="w-4 h-4 text-amber-500" />
-                      )}
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       {permission.description}
                     </p>
 
+                    {/* Accessibility Steps - Shown inline */}
+                    {isAccessibility && !isGranted && isCurrent && (
+                      <div className="mt-4 space-y-2">
+                        <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 mb-3">
+                          <p className="text-xs text-amber-600 dark:text-amber-400">
+                            ⚠️ بدون هذه الصلاحية، لن يتمكن التطبيق من تسجيل صوت الطرف الآخر
+                          </p>
+                        </div>
+                        
+                        {accessibilitySteps.map((step, stepIndex) => {
+                          const StepIcon = step.icon;
+                          return (
+                            <div
+                              key={stepIndex}
+                              className="flex items-center gap-3 p-2 rounded-lg bg-muted/50"
+                            >
+                              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <span className="text-xs font-bold text-primary">{stepIndex + 1}</span>
+                              </div>
+                              <StepIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <span className="text-sm font-medium text-foreground">{step.title}</span>
+                                <span className="text-xs text-muted-foreground mr-2">- {step.description}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        <div className="p-2 rounded-lg bg-muted/30 mt-2">
+                          <p className="text-xs text-muted-foreground text-center">
+                            المسار: الإعدادات ← إمكانية الوصول ← التطبيقات ← مسجل المكالمات
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                     {!isGranted && isCurrent && (
                       <Button
-                        onClick={() => handleGrantPermission(permission)}
+                        onClick={() => handleGrantPermission(permission.id)}
                         className="mt-3 w-full"
                         size="sm"
                       >
                         <ChevronLeft className="w-4 h-4 ml-2" />
-                        {permission.hasGuide ? "عرض التعليمات" : "منح الصلاحية"}
+                        {isAccessibility ? "فتح إعدادات إمكانية الوصول" : "منح الصلاحية"}
                       </Button>
                     )}
                   </div>
@@ -216,13 +264,6 @@ export function PermissionsScreen({ onComplete }: PermissionsScreenProps) {
           </p>
         )}
       </div>
-
-      {/* Accessibility Guide Dialog */}
-      <AccessibilityGuideDialog
-        open={showAccessibilityGuide}
-        onOpenChange={setShowAccessibilityGuide}
-        onComplete={handleAccessibilityComplete}
-      />
     </div>
   );
 }
