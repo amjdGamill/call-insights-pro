@@ -96,13 +96,10 @@ export function CallsScreen() {
               <h1 className="text-2xl font-bold text-foreground">المكالمات</h1>
               <div className="flex items-center gap-3">
                  <ProUpgradeButton />
-                <button 
-                  onClick={() => setPermissionsDialogOpen(true)}
-                  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-                >
+                <div className="flex items-center gap-2">
                   <div className="recording-indicator" />
                   <span className="text-sm font-medium text-muted-foreground">التسجيل نشط</span>
-                </button>
+                </div>
                 <ThemeToggle />
               </div>
             </>
@@ -199,7 +196,10 @@ export function CallsScreen() {
 
       {/* FAB - Hide when in selection mode */}
       {!isSelectionMode && (
-        <button className="fab-button fixed bottom-24 left-5">
+        <button 
+          onClick={() => setPermissionsDialogOpen(true)}
+          className="fab-button fixed bottom-24 left-5"
+        >
           <Mic className="w-6 h-6" />
         </button>
       )}
