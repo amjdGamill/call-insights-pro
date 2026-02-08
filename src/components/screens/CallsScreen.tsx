@@ -1,11 +1,12 @@
 import { useState } from "react";
- import { Search, Mic, X, Trash2, Share2, CheckSquare, Square } from "lucide-react";
- import { ProUpgradeButton } from "@/components/ProUpgradeButton";
+import { Search, Mic, X, Trash2, Share2, CheckSquare, Square } from "lucide-react";
+import { ProUpgradeButton } from "@/components/ProUpgradeButton";
 import { CallCard } from "../CallCard";
 import { ThemeToggle } from "../ThemeToggle";
 import { useRecordings } from "@/hooks/useRecordings";
 import { DeleteMultipleDialog } from "@/components/dialogs/DeleteMultipleDialog";
 import { ShareRecordingsDialog } from "@/components/dialogs/ShareRecordingsDialog";
+import { PermissionsDialog } from "@/components/dialogs/PermissionsDialog";
 import { toast } from "sonner";
 
 export function CallsScreen() {
@@ -14,6 +15,7 @@ export function CallsScreen() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
 
   const isSelectionMode = selectedIds.size > 0;
 
@@ -94,10 +96,13 @@ export function CallsScreen() {
               <h1 className="text-2xl font-bold text-foreground">المكالمات</h1>
               <div className="flex items-center gap-3">
                  <ProUpgradeButton />
-                <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setPermissionsDialogOpen(true)}
+                  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                >
                   <div className="recording-indicator" />
                   <span className="text-sm font-medium text-muted-foreground">التسجيل نشط</span>
-                </div>
+                </button>
                 <ThemeToggle />
               </div>
             </>
@@ -212,6 +217,11 @@ export function CallsScreen() {
         onOpenChange={setShareDialogOpen}
         selectedCount={selectedIds.size}
         onShare={handleShare}
+      />
+
+      <PermissionsDialog
+        open={permissionsDialogOpen}
+        onOpenChange={setPermissionsDialogOpen}
       />
     </div>
   );
