@@ -238,7 +238,10 @@ export function CallsScreen() {
 
       <PermissionsDialog
         open={permissionsDialogOpen}
-        onOpenChange={setPermissionsDialogOpen}
+        onOpenChange={(open) => {
+          setPermissionsDialogOpen(open);
+          if (!open) setPermissionsDismissed(true);
+        }}
       />
     </div>
   );
