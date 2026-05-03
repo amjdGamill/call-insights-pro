@@ -1,6 +1,5 @@
 import { PhoneIncoming, PhoneOutgoing, PhoneMissed, Play, Check } from "lucide-react";
-import { useState } from "react";
-import { AudioPlayerDialog } from "@/components/dialogs/AudioPlayerDialog";
+import { useAudioPlayer } from "@/components/MiniAudioPlayer";
 
 export interface Call {
   id: string;
@@ -35,7 +34,7 @@ const typeColors = {
 export function CallCard({ call, isSelectionMode, isSelected, onToggleSelect }: CallCardProps) {
   const TypeIcon = typeIcons[call.type];
   const typeColor = typeColors[call.type];
-  const [playerDialogOpen, setPlayerDialogOpen] = useState(false);
+  const { play } = useAudioPlayer();
 
   const handleCardClick = () => {
     if (isSelectionMode) {
@@ -50,8 +49,7 @@ export function CallCard({ call, isSelectionMode, isSelected, onToggleSelect }: 
   };
 
   return (
-    <>
-      <div 
+    <div>
         className={`call-card animate-slide-up cursor-pointer ${isSelected ? 'ring-2 ring-primary bg-primary/5' : ''}`}
         onClick={handleCardClick}
         onContextMenu={(e) => {
@@ -103,7 +101,7 @@ export function CallCard({ call, isSelectionMode, isSelected, onToggleSelect }: 
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setPlayerDialogOpen(true);
+                play({ callerName: call.name, duration: call.formattedDuration });
               }}
               className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
             >
