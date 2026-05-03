@@ -212,15 +212,6 @@ export function CallsScreen() {
         </div>
       )}
 
-      {/* FAB - Hide when in selection mode */}
-      {!isSelectionMode && (
-        <button 
-          onClick={() => setPermissionsDialogOpen(true)}
-          className="fab-button fixed bottom-24 left-5"
-        >
-          <Mic className="w-6 h-6" />
-        </button>
-      )}
 
       {/* Dialogs */}
       <DeleteMultipleDialog
