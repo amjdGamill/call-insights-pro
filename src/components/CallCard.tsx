@@ -49,7 +49,7 @@ export function CallCard({ call, isSelectionMode, isSelected, onToggleSelect }: 
   };
 
   return (
-    <div>
+    <div
         className={`call-card animate-slide-up cursor-pointer ${isSelected ? 'ring-2 ring-primary bg-primary/5' : ''}`}
         onClick={handleCardClick}
         onContextMenu={(e) => {
