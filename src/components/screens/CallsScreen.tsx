@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Mic, X, Trash2, Share2, CheckSquare, Square } from "lucide-react";
+import { Search, X, Trash2, Share2, CheckSquare, Square, Play, Pause } from "lucide-react";
 import { ProUpgradeButton } from "@/components/ProUpgradeButton";
 import { CallCard } from "../CallCard";
 import { ThemeToggle } from "../ThemeToggle";
@@ -16,6 +16,7 @@ export function CallsScreen() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
+  const [recordingActive, setRecordingActive] = useState(true);
 
   const isSelectionMode = selectedIds.size > 0;
 
