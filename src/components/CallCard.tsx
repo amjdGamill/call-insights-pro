@@ -110,14 +110,5 @@ export function CallCard({ call, isSelectionMode, isSelected, onToggleSelect }: 
           )}
         </div>
       </div>
-
-      {/* Audio Player Dialog */}
-      <AudioPlayerDialog
-        open={playerDialogOpen}
-        onOpenChange={setPlayerDialogOpen}
-        callerName={call.name}
-        duration={call.formattedDuration}
-      />
-    </>
   );
 }
