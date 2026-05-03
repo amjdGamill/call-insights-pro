@@ -16,7 +16,15 @@ export function CallsScreen() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
+  const [permissionsDismissed, setPermissionsDismissed] = useState(false);
   const [recordingActive, setRecordingActive] = useState(true);
+
+  const handleToggleRecording = () => {
+    setRecordingActive((v) => !v);
+    if (!permissionsDismissed) {
+      setPermissionsDialogOpen(true);
+    }
+  };
 
   const isSelectionMode = selectedIds.size > 0;
 
@@ -98,7 +106,7 @@ export function CallsScreen() {
               <div className="flex items-center gap-2">
                 <ProUpgradeButton />
                 <button
-                  onClick={() => setRecordingActive((v) => !v)}
+                  onClick={handleToggleRecording}
                   className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-xs font-medium transition-colors ${
                     recordingActive
                       ? "bg-destructive/10 text-destructive"
@@ -230,7 +238,10 @@ export function CallsScreen() {
 
       <PermissionsDialog
         open={permissionsDialogOpen}
-        onOpenChange={setPermissionsDialogOpen}
+        onOpenChange={(open) => {
+          setPermissionsDialogOpen(open);
+          if (!open) setPermissionsDismissed(true);
+        }}
       />
     </div>
   );
