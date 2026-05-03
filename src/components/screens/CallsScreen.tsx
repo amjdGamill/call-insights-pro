@@ -95,12 +95,29 @@ export function CallsScreen() {
           ) : (
             <>
               <h1 className="text-2xl font-bold text-foreground">المكالمات</h1>
-              <div className="flex items-center gap-3">
-                 <ProUpgradeButton />
-                <div className="flex items-center gap-2">
-                  <div className="recording-indicator" />
-                  <span className="text-sm font-medium text-muted-foreground">التسجيل نشط</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <ProUpgradeButton />
+                <button
+                  onClick={() => setRecordingActive((v) => !v)}
+                  className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-xs font-medium transition-colors ${
+                    recordingActive
+                      ? "bg-destructive/10 text-destructive"
+                      : "bg-secondary text-muted-foreground"
+                  }`}
+                  aria-label={recordingActive ? "إيقاف التسجيل" : "تشغيل التسجيل"}
+                >
+                  {recordingActive ? (
+                    <>
+                      <Pause className="w-4 h-4" />
+                      <span>إيقاف</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4" />
+                      <span>تشغيل</span>
+                    </>
+                  )}
+                </button>
                 <ThemeToggle />
               </div>
             </>
