@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Mic, X, Trash2, Share2, CheckSquare, Square } from "lucide-react";
+import { Search, X, Trash2, Share2, CheckSquare, Square, Play, Pause } from "lucide-react";
 import { ProUpgradeButton } from "@/components/ProUpgradeButton";
 import { CallCard } from "../CallCard";
 import { ThemeToggle } from "../ThemeToggle";
@@ -16,6 +16,7 @@ export function CallsScreen() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
+  const [recordingActive, setRecordingActive] = useState(true);
 
   const isSelectionMode = selectedIds.size > 0;
 
@@ -94,12 +95,29 @@ export function CallsScreen() {
           ) : (
             <>
               <h1 className="text-2xl font-bold text-foreground">المكالمات</h1>
-              <div className="flex items-center gap-3">
-                 <ProUpgradeButton />
-                <div className="flex items-center gap-2">
-                  <div className="recording-indicator" />
-                  <span className="text-sm font-medium text-muted-foreground">التسجيل نشط</span>
-                </div>
+              <div className="flex items-center gap-2">
+                <ProUpgradeButton />
+                <button
+                  onClick={() => setRecordingActive((v) => !v)}
+                  className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-xs font-medium transition-colors ${
+                    recordingActive
+                      ? "bg-destructive/10 text-destructive"
+                      : "bg-secondary text-muted-foreground"
+                  }`}
+                  aria-label={recordingActive ? "إيقاف التسجيل" : "تشغيل التسجيل"}
+                >
+                  {recordingActive ? (
+                    <>
+                      <Pause className="w-4 h-4" />
+                      <span>إيقاف</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4" />
+                      <span>تشغيل</span>
+                    </>
+                  )}
+                </button>
                 <ThemeToggle />
               </div>
             </>
@@ -194,15 +212,6 @@ export function CallsScreen() {
         </div>
       )}
 
-      {/* FAB - Hide when in selection mode */}
-      {!isSelectionMode && (
-        <button 
-          onClick={() => setPermissionsDialogOpen(true)}
-          className="fab-button fixed bottom-24 left-5"
-        >
-          <Mic className="w-6 h-6" />
-        </button>
-      )}
 
       {/* Dialogs */}
       <DeleteMultipleDialog
