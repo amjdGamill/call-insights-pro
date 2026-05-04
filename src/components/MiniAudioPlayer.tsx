@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
-import { Play, Pause, X } from "lucide-react";
+import { Play, Pause, X, SkipBack, SkipForward } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 
 interface PlayerState {
