@@ -1,5 +1,4 @@
 import { 
-  Mic, 
   Volume2, 
   Palette, 
   Info,
