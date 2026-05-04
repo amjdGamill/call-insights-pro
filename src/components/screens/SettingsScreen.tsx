@@ -1,5 +1,4 @@
 import { 
-  Mic, 
   Volume2, 
   Palette, 
   Info,
@@ -79,20 +78,6 @@ export function SettingsScreen() {
   };
 
   const settingSections = [
-    {
-      title: "التسجيل",
-      items: [
-        {
-          id: "auto-record",
-          icon: Mic,
-          label: "التسجيل التلقائي",
-          description: "تسجيل جميع المكالمات تلقائياً",
-          type: "toggle" as const,
-          color: "bg-primary/10 text-primary",
-          checked: settings.autoRecord,
-        },
-      ],
-    },
     {
       title: "الصوت",
       items: [

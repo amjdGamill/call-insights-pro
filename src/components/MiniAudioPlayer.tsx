@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
-import { Play, Pause, X } from "lucide-react";
+import { Play, Pause, X, SkipBack, SkipForward } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 
 interface PlayerState {
@@ -75,16 +75,24 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
     <AudioPlayerContext.Provider value={{ play }}>
       {children}
       {current && (
-        <div className="fixed bottom-20 left-0 right-0 z-50 pointer-events-none">
-          <div className="max-w-md mx-auto pointer-events-auto bg-card border-t border-border shadow-lg px-4 pt-2 pb-3">
-            {/* Top row: title + close */}
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-sm font-semibold text-foreground truncate flex-1">
-                {current.callerName}
-              </span>
+        <div className="fixed bottom-24 left-0 right-0 z-50 pointer-events-none">
+          <div className="max-w-md mx-auto pointer-events-auto bg-card/95 backdrop-blur-xl border-t border-b border-border shadow-2xl px-4 pt-3 pb-4">
+            {/* Top row: avatar + title + close */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shrink-0">
+                <span className="text-base font-bold text-primary">
+                  {current.callerName.charAt(0)}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-semibold text-foreground truncate">
+                  {current.callerName}
+                </h4>
+                <p className="text-xs text-muted-foreground">جاري التشغيل</p>
+              </div>
               <button
                 onClick={close}
-                className="w-7 h-7 shrink-0 rounded-full hover:bg-secondary flex items-center justify-center text-muted-foreground"
+                className="w-7 h-7 shrink-0 rounded-full hover:bg-secondary flex items-center justify-center text-muted-foreground transition-colors"
                 aria-label="إغلاق المشغل"
               >
                 <X className="w-4 h-4" />
@@ -101,19 +109,33 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
             />
 
             {/* Time stamps */}
-            <div className="flex justify-between text-xs text-muted-foreground tabular-nums mt-1">
+            <div className="flex justify-between text-[11px] text-muted-foreground tabular-nums mt-1.5">
               <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(totalDuration)}</span>
+              <span>-{formatTime(Math.max(0, totalDuration - currentTime))}</span>
             </div>
 
-            {/* Play/Pause centered below */}
-            <div className="flex justify-center mt-2">
+            {/* Controls row */}
+            <div className="flex items-center justify-center gap-6 mt-3">
+              <button
+                onClick={() => setCurrentTime((t) => Math.max(0, t - 10))}
+                className="w-10 h-10 rounded-full hover:bg-secondary flex items-center justify-center text-foreground transition-colors"
+                aria-label="رجوع 10 ثوان"
+              >
+                <SkipBack className="w-5 h-5" />
+              </button>
               <button
                 onClick={() => setIsPlaying((p) => !p)}
-                className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-md hover:bg-primary/90 transition-colors"
+                className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-lg hover:bg-primary/90 active:scale-95 transition-all"
                 aria-label={isPlaying ? "إيقاف مؤقت" : "تشغيل"}
               >
-                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 mr-[-2px]" />}
+                {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 mr-[-2px]" />}
+              </button>
+              <button
+                onClick={() => setCurrentTime((t) => Math.min(totalDuration, t + 10))}
+                className="w-10 h-10 rounded-full hover:bg-secondary flex items-center justify-center text-foreground transition-colors"
+                aria-label="تقديم 10 ثوان"
+              >
+                <SkipForward className="w-5 h-5" />
               </button>
             </div>
           </div>
